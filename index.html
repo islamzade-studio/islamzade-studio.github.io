@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="favicon.png">
+<title>Islamzade Studio — Yüklə / İndir</title>
+<style>
+  body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#0f2a1f;color:#f3efe2;display:flex;min-height:100vh;align-items:center;justify-content:center}
+  .card{background:#173d2d;border:2px solid #c9a227;border-radius:16px;padding:28px 30px;max-width:560px;width:90%;box-shadow:0 10px 40px #0008}
+  h1{margin:0 0 4px;font-size:26px;color:#f5d97a}
+  .sub{opacity:.85;margin:0 0 18px;line-height:1.5}
+  .bar{height:14px;background:#0b1f17;border-radius:8px;overflow:hidden;margin:14px 0 6px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#2b8a5e,#c9a227);transition:width .2s}
+  .st{font-size:15px;min-height:22px}
+  .btn{display:inline-block;margin-top:14px;background:#c9a227;color:#111;font-weight:700;padding:11px 22px;border-radius:9px;text-decoration:none;border:0;font-size:15px;cursor:pointer}
+  .small{font-size:13px;opacity:.75;margin-top:16px;line-height:1.5}
+  .ok{color:#9fe0b5}.err{color:#ffb3b3}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1 style="display:flex;align-items:center;gap:12px"><img src="favicon.png" width="52" height="52" alt="" style="border-radius:12px">Islamzade Studio</h1>
+  <p class="sub">Dərslər, təlimlər və canlı yayımlar üçün peşəkar studiya.<br>Dersler, eğitimler ve canlı yayınlar için profesyonel stüdyo.</p>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="st" id="st">Hazırlanır… / Hazırlanıyor…</div>
+  <button class="btn" id="again" style="display:none">⬇ Yenidən yüklə / Tekrar indir</button>
+  <div class="small">
+    <b>Chrome "faylı saxlayım?" soruşarsa</b> (və ya faylın adı "Unconfirmed…" olarsa): <b>Ctrl+J</b> basın → faylın yanında <b>"Sakla / Keep"</b> (lazım olsa ⋮ → "Yenə də saxla").<br>
+    <b>Chrome "dosyayı saklayayım mı?" sorarsa</b> (veya dosyanın adı "Unconfirmed…" olursa): <b>Ctrl+J</b> basın → dosyanın yanında <b>"Sakla / Keep"</b> (gerekirse ⋮ → "Yine de sakla").<br><br>
+    Yükləmə bitəndə <b>IslamzadeStudio-Setup.exe</b> faylını açın. Windows "kompüterinizi qorudu" desə: <b>Ətraflı məlumat → Hər halda işə sal</b>.<br>
+    İndirme bitince <b>IslamzadeStudio-Setup.exe</b> dosyasını açın. Windows "bilgisayarınızı korudu" derse: <b>Ek bilgi → Yine de çalıştır</b>.<br><br>
+    Əlaqə / İletişim: WhatsApp +994 51 358 10 66
+  </div>
+</div>
+<script>
+const BASE = 'https://raw.githubusercontent.com/islamzade-studio/islamzade-studio.github.io/updates/';
+const st = document.getElementById('st'), bar = document.getElementById('bar'), again = document.getElementById('again');
+let blobUrl = null;
+function save() {
+  const a = document.createElement('a'); a.href = blobUrl; a.download = 'IslamzadeStudio-Setup.exe';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function run() {
+  busy = true;
+  try {
+    const info = await (await fetch(BASE + 'latest.json?t=' + Date.now(), { cache: 'no-store' })).json();
+    st.textContent = 'Versiya / Sürüm ' + info.version + ' — yüklənir / indiriliyor… 0%';
+    const chunks = []; let got = 0; const total = info.size;
+    for (const p of info.parts) {
+      const r = await fetch(BASE + p.file + '?v=' + info.version);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const reader = r.body.getReader();
+      for (;;) {
+        const { done, value } = await reader.read(); if (done) break;
+        chunks.push(value); got += value.length;
+        const pc = Math.floor(got * 100 / total); bar.style.width = pc + '%';
+        st.textContent = 'Versiya / Sürüm ' + info.version + ' — yüklənir / indiriliyor… ' + pc + '% (' + Math.round(got / 1048576) + ' / ' + Math.round(total / 1048576) + ' MB)';
+      }
+    }
+    const blob = new Blob(chunks, { type: 'application/octet-stream' });
+    if (crypto && crypto.subtle) {
+      st.textContent = 'Yoxlanılır… / Kontrol ediliyor…';
+      const h = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', await blob.arrayBuffer()))).map(b => b.toString(16).padStart(2, '0')).join('');
+      if (h !== info.sha256) throw new Error('fayl zədəlidir / dosya bozuk');
+    }
+    blobUrl = URL.createObjectURL(blob); save();
+    st.innerHTML = '<span class="ok">✓ Hazırdır! Fayl yükləndi. / Hazır! Dosya indirildi.</span>';
+    again.style.display = 'inline-block';
+  } catch (e) {
+    st.innerHTML = '<span class="err">Xəta / Hata: ' + e.message + ' — səhifəni yeniləyin / sayfayı yenileyin.</span>';
+  }
+}
+let busy = false;
+again.onclick = () => blobUrl ? save() : (!busy && run());
+run();
+</script>
+</body>
+</html>
