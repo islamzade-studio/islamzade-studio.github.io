@@ -1,0 +1,27 @@
+{
+ "version": "1.4.0",
+ "size": 125525471,
+ "sha256": "6f401dd0550ad979dce925a3d9221ac08c7955a519dd4cb43e50140ec2990f8d",
+ "parts": [
+  {
+   "file": "setup-1.4.0.part00",
+   "size": 47185920,
+   "sha256": "028f2f3e94ff2baacd055019c2251641e17a56e4bcef9e22537f8b3c0cbdc2a0"
+  },
+  {
+   "file": "setup-1.4.0.part01",
+   "size": 47185920,
+   "sha256": "050ee924fc4fdc9cbc019d167d5969819ef20f1a20cbed9aec52d8db4aa5fd05"
+  },
+  {
+   "file": "setup-1.4.0.part02",
+   "size": 31153631,
+   "sha256": "a56bb810d0e20ce9428655d1f9b343a3901911d826892a570917384a5d506e4e"
+  }
+ ],
+ "date": "2026-11-26T04:43:10.366Z",
+ "notes": {
+  "az": "Yeni görünüş: yeni ikon, 14 yeni fon, hazır ifadələr (📚), bütün şriftlər bir siyahıda, kitab istiqaməti avtomatik. Lisenziya açarını yapışdırmaq asanlaşdı. Yeni ünvan: islamzade-studio.github.io",
+  "tr": "Yeni görünüm: yeni simge, 14 yeni arka plan, hazır ifadeler (📚), tüm yazı tipleri tek listede, kitap yönü otomatik. Lisans anahtarını yapıştırmak kolaylaştı. Yeni adres: islamzade-studio.github.io"
+ }
+}
